@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head>
+    <title>Socket.IO pusher</title>
+</head>
+<body>
+<ul id="people"></ul>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+    var socket = io();
+
+    var names = ["James", "Paul", "Tito", "Jakob", "Martin", "Stefan", "Victoria", "Sarah"];
+
+    socket.emit("hello", {name: names[Math.round(Math.random()*8)], location: window.location.pathname});
+    socket.on("id", function(id){
+        socket.id = id;
+    });
+    socket.on("who", function(obj){
+        for (var key in obj) {
+            if(socket.id != key && document.getElementById(key) == undefined){
+                value = obj[key];
+                var li = document.createElement("li");
+                li.setAttribute("id", key);
+                li.appendChild(document.createTextNode(value));
+                document.getElementById("people").appendChild(li);
+            }
+        }
+    });
+    socket.on("bye", function(message){
+        var el = document.getElementById(message.id);
+        if(el){
+            el.parentElement.removeChild(el);
+        }
+    });
+</script>
+</body>
+</html>
